@@ -48,6 +48,15 @@ public class FilterContours {
 		findContours(findContoursInput, findContoursExternalOnly, findContoursOutput);
 
 	}
+	
+	public ArrayList<Point> centers() {
+		ArrayList<Point> points = new ArrayList<Point>(findContoursOutput.size());
+		for( int i = 0; i < findContoursOutput.size(); i++ ){
+			Moments moment = Imgproc.moments(findContoursOutput.get(i), false);
+			points.add(new Point( (moment.get_m10() / moment.get_m00()), (moment.get_m01() / moment.get_m00()) ));
+		}
+		return points;
+	}
 
 	/**
 	 * This method is a generated getter for the output of a HSV_Threshold.

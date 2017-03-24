@@ -4,6 +4,8 @@ import edu.wpi.first.wpilibj.networktables.*;
 import edu.wpi.first.wpilibj.tables.*;
 import edu.wpi.cscore.*;
 import org.opencv.core.Mat;
+import org.opencv.core.Point;
+import org.opencv.core.Scalar;
 import org.opencv.imgproc.Imgproc;
 
 public class Main {
@@ -79,6 +81,8 @@ public class Main {
     
     FilterContours filter = new FilterContours();
     Mat inputImage = new Mat();
+    Mat outputImage = new Mat();
+    ArrayList<Point> centers = new ArrayList<Point>(2);
     
     // Infinitely process image
     while (true) {
@@ -90,11 +94,15 @@ public class Main {
       // Below is where you would do your OpenCV operations on the provided image
       // The sample below just changes color source to HSV
       filter.process(inputImage);
-
+      outputImage = filter.hsvThresholdOutput();
+      centers = filter.centers();
+      for( int i = 0; i < centers.size(); i++ ) {
+    	  Imgproc.circle(outputImage, centers.get(i), 2, new Scalar(255,255,255));
+      }
       // Here is where you would write a processed image that you want to restreams
       // This will most likely be a marked up image of what the camera sees
       // For now, we are just going to stream the HSV image
-      imageSource.putFrame(filter.hsvThresholdOutput());
+      imageSource.putFrame(outputImage);
     }
   }
 
