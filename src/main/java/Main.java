@@ -54,14 +54,14 @@ public class Main {
     /***********************************************/
 
     // USB Camera
-    /*
+    
     // This gets the image from a USB camera 
     // Usually this will be on device 0, but there are other overloads
     // that can be used
     UsbCamera camera = setUsbCamera(0, inputStream);
     // Set the resolution for our camera, since this is over USB
     camera.setResolution(640,480);
-    */
+    
 
     // This creates a CvSink for us to use. This grabs images from our selected camera, 
     // and will allow us to use those images in opencv
@@ -76,9 +76,10 @@ public class Main {
 
     // All Mats and Lists should be stored outside the loop to avoid allocations
     // as they are expensive to create
+    
+    FilterContours filter = new FilterContours();
     Mat inputImage = new Mat();
-    Mat hsv = new Mat();
-
+    
     // Infinitely process image
     while (true) {
       // Grab a frame. If it has a frame time of 0, there was an error.
@@ -88,12 +89,12 @@ public class Main {
 
       // Below is where you would do your OpenCV operations on the provided image
       // The sample below just changes color source to HSV
-      Imgproc.cvtColor(inputImage, hsv, Imgproc.COLOR_BGR2HSV);
+      filter.process(inputImage);
 
       // Here is where you would write a processed image that you want to restreams
       // This will most likely be a marked up image of what the camera sees
       // For now, we are just going to stream the HSV image
-      imageSource.putFrame(hsv);
+      imageSource.putFrame(filter.hsvThresholdOutput());
     }
   }
 
