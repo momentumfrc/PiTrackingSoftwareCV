@@ -14,13 +14,15 @@ public class Main {
     System.loadLibrary("opencv_java310");
 
     // Connect NetworkTables, and get access to the publishing table
-    NetworkTable.setClientMode();
+    //NetworkTable.setClientMode();
+    NetworkTable.setServerMode();
     // Set your team number here
     NetworkTable.setTeam(4999);
 
     NetworkTable.initialize();
-
-
+    
+    NetworkTable visionTable = NetworkTable.getTable("visionTable");
+    
     // This is the network port you want to stream the raw received image to
     // By rules, this has to be between 1180 and 1190, so 1185 is a good choice
     int streamPort = 1185;
@@ -62,7 +64,7 @@ public class Main {
     // that can be used
     UsbCamera camera = setUsbCamera(0, inputStream);
     // Set the resolution for our camera, since this is over USB
-    camera.setResolution(640,480);
+    camera.setResolution(160,120);
     
 
     // This creates a CvSink for us to use. This grabs images from our selected camera, 
@@ -81,30 +83,62 @@ public class Main {
     
     FilterContours filter = new FilterContours();
     Mat inputImage = new Mat();
-    Mat outputImage = new Mat();
+    //Mat outputImage = new Mat();
     ArrayList<Point> centers = new ArrayList<Point>(2);
-    
+    ArrayList<double[]> wHs = new ArrayList<double[]>(2);
+    Point center = new Point();
     // Infinitely process image
     while (true) {
       // Grab a frame. If it has a frame time of 0, there was an error.
       // Just skip and continue
       long frameTime = imageSink.grabFrame(inputImage);
       if (frameTime == 0) continue;
-
+      
       // Below is where you would do your OpenCV operations on the provided image
       // The sample below just changes color source to HSV
       filter.process(inputImage);
-      outputImage = filter.hsvThresholdOutput();
+      //outputImage = filter.hsvThresholdOutput();
+      
       centers = filter.centers();
-      for( int i = 0; i < centers.size(); i++ ) {
-    	  Imgproc.circle(outputImage, centers.get(i), 2, new Scalar(255,255,255));
+      
+      
+      wHs = filter.wH();
+      
+      boolean found = (centers.size() == 2);
+      if (found != visionTable.getBoolean("foundTarget", !found)) {
+    	  visionTable.putBoolean("foundTarget", found);
       }
+      if(found) {
+    	  visionTable.putNumber("x1",centers.get(0).x);
+    	  visionTable.putNumber("y1",centers.get(0).y);
+    	  visionTable.putNumber("x2", centers.get(1).x);
+    	  visionTable.putNumber("y2", centers.get(1).y);
+    	  
+    	  center.x = ((centers.get(0).x + centers.get(1).x) / 2);
+    	  center.y = ((centers.get(0).y + centers.get(1).y) / 2);
+    	  
+    	  visionTable.putNumber("cx", center.x);
+    	  visionTable.putNumber("cy", center.y);
+    	  
+    	  visionTable.putNumber("wL", wHs.get(0)[0]);
+    	  visionTable.putNumber("hL", wHs.get(0)[1]);
+    	  visionTable.putNumber("wR", wHs.get(1)[0]);
+    	  visionTable.putNumber("hR", wHs.get(1)[1]);
+    	  
+    	  Imgproc.circle(inputImage, center, 3, new Scalar(255,0,255));
+      }
+      for( int i = 0; i < centers.size(); i++ ) {
+    	  Imgproc.circle(inputImage, centers.get(i), 3, new Scalar(0,0,255));
+      }
+      
+      
       // Here is where you would write a processed image that you want to restreams
       // This will most likely be a marked up image of what the camera sees
       // For now, we are just going to stream the HSV image
-      imageSource.putFrame(outputImage);
+      imageSource.putFrame(inputImage);
     }
   }
+  
 
   private static HttpCamera setHttpCamera(String cameraName, MjpegServer server) {
     // Start by grabbing the camera from NetworkTables
