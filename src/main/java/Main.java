@@ -14,8 +14,10 @@ public class Main {
     System.loadLibrary("opencv_java310");
 
     // Connect NetworkTables, and get access to the publishing table
-    //NetworkTable.setClientMode();
-    NetworkTable.setServerMode();
+    // if using setClientMode, make sure exactly one server is running
+    // Server should be roboRio or TablesServer project
+    NetworkTable.setClientMode();
+    //NetworkTable.setServerMode();
     // Set your team number here
     NetworkTable.setTeam(4999);
 
