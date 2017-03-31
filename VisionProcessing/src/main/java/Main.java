@@ -87,7 +87,7 @@ public class Main {
     Mat inputImage = new Mat();
     //Mat outputImage = new Mat();
     ArrayList<Point> centers = new ArrayList<Point>(2);
-    ArrayList<double[]> wHs = new ArrayList<double[]>(2);
+    //ArrayList<double[]> wHs = new ArrayList<double[]>(2);
     Point center = new Point();
     // Infinitely process image
     while (true) {
@@ -104,12 +104,10 @@ public class Main {
       centers = filter.centers();
       
       
-      wHs = filter.wH();
+      //wHs = filter.wH();
       
       boolean found = (centers.size() == 2);
-      if (found != visionTable.getBoolean("foundTarget", !found)) {
-    	  visionTable.putBoolean("foundTarget", found);
-      }
+      visionTable.putBoolean("foundTarget", found);
       if(found) {
     	  visionTable.putNumber("x1",centers.get(0).x);
     	  visionTable.putNumber("y1",centers.get(0).y);
@@ -122,10 +120,10 @@ public class Main {
     	  visionTable.putNumber("cx", center.x);
     	  visionTable.putNumber("cy", center.y);
     	  
-    	  visionTable.putNumber("wL", wHs.get(0)[0]);
+    	 /* visionTable.putNumber("wL", wHs.get(0)[0]);
     	  visionTable.putNumber("hL", wHs.get(0)[1]);
     	  visionTable.putNumber("wR", wHs.get(1)[0]);
-    	  visionTable.putNumber("hR", wHs.get(1)[1]);
+    	  visionTable.putNumber("hR", wHs.get(1)[1]);*/
     	  
     	  Imgproc.circle(inputImage, center, 3, new Scalar(255,0,255));
       }

@@ -56,7 +56,7 @@ public class FilterContours {
 		findContours(findContoursInput, findContoursExternalOnly, findContoursOutput);
 
 		// Step Filter_Contours0:
-		ArrayList<MatOfPoint> filterContoursContours = findContoursOutput;
+		/*ArrayList<MatOfPoint> filterContoursContours = findContoursOutput;
 		double filterContoursMinArea = 0;
 		double filterContoursMinPerimeter = 0;
 		double filterContoursMinWidth = 0;
@@ -69,7 +69,7 @@ public class FilterContours {
 		double filterContoursMinRatio = 0.0;
 		double filterContoursMaxRatio = 1.0;
 		filterContours(filterContoursContours, filterContoursMinArea, filterContoursMinPerimeter, filterContoursMinWidth, filterContoursMaxWidth, filterContoursMinHeight, filterContoursMaxHeight, filterContoursSolidity, filterContoursMaxVertices, filterContoursMinVertices, filterContoursMinRatio, filterContoursMaxRatio, filterContoursOutput);
-
+		 */
 	}
 
 	/**
